@@ -59,12 +59,12 @@ app.delete('/todos/:id',(req,res)=>{
         return  res.status(404).send();
     }
     //remove todo by id
-    Todo.findByIdAndRemove(id).then((doc)=>{
-        if(!doc){
+    Todo.findByIdAndRemove(id).then((todo)=>{
+        if(!todo){
             //if no doc send 404, if doc send doc back with 200
             return res.status(404).send();
         }
-        return res.send(doc);
+        return res.send({todo});
     },(error)=>{
         //if error 400
         return res.status(400).send();
