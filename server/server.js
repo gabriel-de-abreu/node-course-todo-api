@@ -13,13 +13,31 @@ const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
+//Users routes
+//Insert a new user
+app.post('/users',(req,res)=>{
+    var body= _.pick(req.body,['email','password']);
+    var user = new User(
+        body
+        // email:body.email,
+        // password:body.password
+    );
+    // console.log(user);
+    user.save().then((doc)=>{
+        res.send({doc});
+    }).catch((error)=>{
+        return res.status(400).send(error)
+    });
+});
+
+//Todos routes
 //Insert new todo
 app.post('/todos',(req,res)=>{
     var todo=new Todo({
         text: req.body.text
     });
     todo.save().then((doc)=>{
-        res.send(doc);
+        res.send({doc});
     },(e)=>{
         res.status(400).send(e);
     });
