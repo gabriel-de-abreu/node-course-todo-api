@@ -276,3 +276,21 @@ describe('POST /users/login',()=>{
         .catch((error)=>(done(error)));    
     });
 });
+
+describe('DELETE /users/me/token',()=>{
+    it('should remove auth token on logout',(done)=>{
+        request(app)
+        .delete('/users/me/token')
+        .set('x-auth',users[0].tokens[0].token)
+        .expect(200)
+        .end((error)=>{
+            if(error){
+                return done(error);
+            }
+            User.findById(new ObjectID(users[0]._id)).then((user)=>{
+                expect(user.tokens[0]).toNotExist();
+                done();
+            }).catch((error)=>done(error));
+        });
+    });
+});
