@@ -1,2 +1,5 @@
 #Ignore node modules folder
 /node_modules
+
+#Ignore the configurations file
+/server/config/config.json
