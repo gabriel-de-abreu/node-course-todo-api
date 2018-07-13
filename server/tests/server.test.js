@@ -165,6 +165,7 @@ describe('PATCH /todos/id',()=>{
         var id=todos[0]._id.toHexString();
         request(app)
         .patch(`/todos/${id}`)
+        .set('x-auth',users[0].tokens[0].token)
         .send({text,completed})
         .expect(200)
         .expect((res)=>{
@@ -179,6 +180,7 @@ describe('PATCH /todos/id',()=>{
         var completed = false;
         request(app)
         .patch(`/todos/${id}`)
+        .set('x-auth',users[0].tokens[0].token)
         .send({text,completed})
         .expect(200)
         .expect((res)=>{
@@ -186,6 +188,30 @@ describe('PATCH /todos/id',()=>{
             expect(res.body.todo.completedAt).toNotExist();
             expect(res.body.todo.completed).toBe(false);
         })
+        .end(done);
+    });
+
+    it('should not update the todo from another user',(done)=>{
+        var text = "changing this task";
+        var completed= true;
+        var id=todos[0]._id.toHexString();
+        request(app)
+        .patch(`/todos/${id}`)
+        .set('x-auth',users[1].tokens[0].token)
+        .send({text,completed})
+        .expect(404)
+        .end(done);
+    });
+    
+    it('should not clear completedAt when todo is not completed from another user',(done)=>{
+        var id= todos[1]._id.toHexString();
+        var text = "changing this task";
+        var completed = false;
+        request(app)
+        .patch(`/todos/${id}`)
+        .set('x-auth',users[1].tokens[0].token)
+        .send({text,completed})
+        .expect(404)
         .end(done);
     });
 });
