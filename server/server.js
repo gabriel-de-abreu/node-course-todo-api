@@ -81,12 +81,15 @@ app.get('/todos',authenticate,(req,res)=>{
 });
 
 //Get individual todo
-app.get('/todos/:id',(req,res)=>{
+app.get('/todos/:id',authenticate,(req,res)=>{
     var id = req.params.id;
     if(!ObjectId.isValid(id)){
         return res.status(404).send();
     }
-    Todo.findById(id).then((todo)=>{
+    Todo.findOne({
+        _id:id,
+        _creator:req.user._id
+    }).then((todo)=>{
         if(todo!=null){
             return res.send({todo});
         }else{
@@ -97,7 +100,7 @@ app.get('/todos/:id',(req,res)=>{
     });
 });
 //Delete a todo
-app.delete('/todos/:id',(req,res)=>{
+app.delete('/todos/:id',authenticate,(req,res)=>{
     //get the id
     var id= req.params.id;
     //validate the id, if not valid 404
@@ -105,7 +108,10 @@ app.delete('/todos/:id',(req,res)=>{
         return  res.status(404).send();
     }
     //remove todo by id
-    Todo.findByIdAndRemove(id).then((todo)=>{
+    Todo.findOneAndRemove({
+        _id:id,
+        _creator: req.user._id
+    }).then((todo)=>{
         if(!todo){
             //if no doc send 404, if doc send doc back with 200
             return res.status(404).send();
